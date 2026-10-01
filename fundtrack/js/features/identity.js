@@ -1,0 +1,5 @@
+const MARK='<svg class="mark" viewBox="0 0 48 48" width="56" height="56" aria-hidden="true"><path d="M8 38V10l16 20 16-20v28" pathLength="1"/></svg>';
+views.intro=()=>`<div class="intro"><i class="iline"></i><div class="i2">${MARK}</div><h1 class="i3">FUNDTRACK</h1><p class="i4">Your Graduate Application<br>Command Center</p><hr class="i5"><p class="i5">A Mustapha Original</p><p class="i6">Let's get started.</p><button class="btn p i7" data-act="introgo">Enter FundTrack →</button></div>`;
+const baseSet2=views.settings;
+views.settings=()=>baseSet2()+`<div class="panel"><h3>About</h3><div class="static" style="color:var(--ac)">${MARK}</div><b>FUNDTRACK</b><p style="margin:4px 0">Your Graduate Application Command Center</p><small>A personal system for organizing opportunities, applications, deadlines and academic outreach.</small><p style="margin:10px 0 0">Designed &amp; Developed by Mustapha<br><small>Version 1.0</small></p><div class="bar" style="margin-top:10px"><button class="btn" data-act="replay">Replay Introduction</button></div></div>`;
+Object.assign(ACTIONS,{introgo(){S.introSeen=true;save();render()},replay(){S.introSeen=false;save();render()}});

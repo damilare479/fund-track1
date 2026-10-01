@@ -1,0 +1,8 @@
+let ostep=0;const ob={name:'',goal:'',areas:[],countries:[]},INTERESTS=['Antimicrobial resistance','Microbiology','Infectious disease','Bioinformatics','Genomics','One health','Public health','Immunology','Environmental microbiology'];
+views.onboarding=()=>{const pick=(k,l)=>`<div class="chips">${l.map(x=>`<button class="btn ${ob[k].includes(x)?'p':''}" data-act="obtog" data-k="${k}" data-val="${esc(x)}">${esc(x)}</button>`).join('')}</div>`,
+nav=(last)=>`<div class="bar" style="margin-top:20px">${ostep>0?'<button class="btn" data-act="obback">Back</button>':''}<button class="btn p" data-act="${last?'obfinish':'obnext'}">${last?'Enter FundTrack':'Continue →'}</button>${ostep>0&&!last?'<button class="btn" data-act="obskip">Skip</button>':''}</div>`;
+const S0=[`<h2>Welcome to FundTrack</h2><p class="sub">Your personal graduate application command center. Let's personalize your workspace.</p><label>What should we call you?<input id="ob-name" value="${esc(ob.name)}" placeholder="Enter your name" autofocus></label>${nav()}`,
+`<h2>Primary degree goal</h2><p class="sub">Optional.</p><div class="chips">${["Master's",'PhD','Both'].map(x=>`<button class="btn ${ob.goal===x?'p':''}" data-act="obgoal" data-val="${x}">${x}</button>`).join('')}</div>${nav()}`,
+`<h2>Main research interests</h2><p class="sub">Select any that apply.</p>${pick('areas',INTERESTS)}${nav()}`,
+`<h2>Preferred countries</h2><p class="sub">Optional.</p>${pick('countries',COUNTRIES)}${nav(1)}`];
+return `<div class="ob">${S0[Math.min(ostep,3)]}<small style="display:block;margin-top:16px">Step ${Math.min(ostep,3)+1} of 4</small></div>`};

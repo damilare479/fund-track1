@@ -1,0 +1,12 @@
+const PRI={critical:0,high:1,medium:2,low:3},PCLS={critical:'urgent',high:'urgent',medium:'attn',low:''},FINISHED=['Submitted','Interview','Decision','Accepted','Rejected'];
+function getApplicationActions(){return S.apps.filter(a=>!FINISHED.includes(a.status)).flatMap(a=>{const o=opp(a.oid),d=days(o.deadline),p=pct(a),miss=S.docsList.filter((_,i)=>!a.done[i]);if(d<0)return[];
+const b={type:'application',sub:o.title+' · '+o.inst,entityType:'app',entityId:a.id,due:o.deadline,cta:'Open',progress:p};
+return miss.length?[{...b,id:'app'+a.id,priority:d<=7?'critical':d<=14?'high':p<50?'medium':'low',title:'Complete application',reason:'Missing: '+miss.slice(0,2).join(', ')}]:[{...b,id:'sub'+a.id,priority:d<=7?'critical':'high',title:'Submit application',reason:'Checklist complete'}]})}
+function getOutreachActions(){return S.prof.flatMap(p=>{const since=p.contacted?Math.max(0,-days(p.contacted)):0,b={type:'outreach',sub:p.inst,entityType:'prof',entityId:p.id,due:p.followUp||''};
+if(p.stage==='Follow-up due'||p.stage==='Email sent'&&(since>=7||p.followUp&&days(p.followUp)<=0))return[{...b,id:'fu'+p.id,priority:since>=14?'critical':'high',title:'Follow up with '+p.name,reason:since+' days since your last email',cta:'Follow up'}];
+if(p.stage==='Ready to contact')return[{...b,id:'ct'+p.id,priority:'medium',title:'Email '+p.name,reason:'Ready to contact',cta:'Open'}];return[]})}
+function getDeadlineActions(){return S.opps.filter(o=>['Interested','Researching','Preparing'].includes(o.status)&&!S.apps.some(a=>a.oid===o.id)&&days(o.deadline)>=0&&days(o.deadline)<=14).map(o=>({id:'dl'+o.id,type:'deadline',priority:days(o.deadline)<=7?'high':'medium',title:'Decide on '+o.title,sub:o.inst,reason:'Closes in '+days(o.deadline)+' days, no application yet',entityType:'opp',entityId:o.id,due:o.deadline,cta:'Review'}))}
+function getDocumentActions(){const act=S.apps.filter(a=>!FINISHED.includes(a.status));return S.docsList.flatMap((d,i)=>{const n=act.filter(a=>!a.done[i]).length;return n>=2?[{id:'doc'+i,type:'document',priority:'low',title:'Prepare: '+d,sub:'Needed for '+n+' active applications',reason:'Document outstanding',entityType:'doc',entityId:i,due:'',cta:'Open'}]:[]})}
+function prioritizeActions(l){return l.sort((a,b)=>PRI[a.priority]-PRI[b.priority]||((a.due||'9')<(b.due||'9')?-1:1))}
+function getNextBestActions(){return prioritizeActions([...getApplicationActions(),...getOutreachActions(),...getDeadlineActions(),...getDocumentActions()])}
+const nextFor=(t,id)=>getNextBestActions().find(a=>a.entityType===t&&a.entityId===id);
